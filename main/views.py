@@ -1,11 +1,15 @@
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes,authentication_classes
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from . import models
 from . import serializers
 
 @api_view(['GET'])
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
 def get_payment_plan(request):
     plans = models.Product.objects.all()
     serializer = serializers.ProductSerializer(plans, many=True)
@@ -13,6 +17,8 @@ def get_payment_plan(request):
 
 
 @api_view(['POST'])
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
 def create_payment_plan(request):
     serializer = serializers.ProductSerializer(data=request.data)
     if serializer.is_valid():
@@ -21,6 +27,8 @@ def create_payment_plan(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET'])
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
 def payment_details(request,id):
     try:
         plan = models.Product.objects.get(id=id)
@@ -31,6 +39,8 @@ def payment_details(request,id):
 
 
 @api_view(['PUT'])
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
 def update_payment_status(request):
     id=request.data.get('id')
     sts = request.data.get('status')
